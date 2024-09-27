@@ -5,6 +5,10 @@ This is a full-stack task management application built with Django and React. It
 - Task boards with drag-and-drop functionality.
 - Task creation and assignment.
 - Admin functionalities for task management.
+- 
+# Screen Record Link
+
+https://youtu.be/iBselZ9Qg_0
 
 ## Features Demo
 
