@@ -22,9 +22,10 @@ Watch the video demo of the application [here](https://your-video-link.com).
 
 ##2. Create a virtual environment:
    python3 -m venv env
+   
 ##3.Install dependencies:
-
   pip install -r requirements.txt
+  
 ##4.Apply migrations and start the server:
   python manage.py migrate
   python manage.py runserver
