@@ -113,12 +113,9 @@ class WorkBoardUserRoleSerializer(serializers.ModelSerializer):
         queryset=User.objects.all(),
         slug_field='username'  # Role assignment by username
     )
-    work_board = serializers.SlugRelatedField(
-        queryset=WorkBoard.objects.all(),
-        slug_field='title'     # WorkBoard assignment by title
-    )
 
     class Meta:
         model = WorkBoardUserRole
-        fields = ['id', 'user', 'work_board', 'role']
+        fields = ['id', 'user', 'role']
         read_only_fields = ['id']
+

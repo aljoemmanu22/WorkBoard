@@ -8,6 +8,9 @@ from .serializers import UserSerializer, LoginSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
+from .models import CustomUser
+from .permissions import IsOwnerOrCollaborator
+
 
 # Register View (unchanged)
 class RegisterView(generics.CreateAPIView):
@@ -57,6 +60,20 @@ from .models import WorkBoard, Task, WorkBoardUserRole
 from .serializers import WorkBoardSerializer, WorkBoardCreateSerializer, TaskSerializer, WorkBoardUserRoleSerializer
 
 # List all work boards or create a new one
+# class WorkBoardListCreateView(ListCreateAPIView):
+#     queryset = WorkBoard.objects.all()
+#     permission_classes = [IsAuthenticated]
+
+#     def get_serializer_class(self):
+#         if self.request.method == 'POST':
+#             return WorkBoardCreateSerializer
+#         return WorkBoardSerializer
+
+#     def perform_create(self, serializer):
+#         serializer.save(created_by=self.request.user)
+
+from .models import WorkBoardUserRole  # Ensure to import WorkBoardUserRole
+
 class WorkBoardListCreateView(ListCreateAPIView):
     queryset = WorkBoard.objects.all()
     permission_classes = [IsAuthenticated]
@@ -67,14 +84,19 @@ class WorkBoardListCreateView(ListCreateAPIView):
         return WorkBoardSerializer
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        # Save the work board with the user who created it
+        work_board = serializer.save(created_by=self.request.user)
+        
+        # Assign the user as the owner of the work board
+        WorkBoardUserRole.objects.create(user=self.request.user, work_board=work_board, role=WorkBoardUserRole.OWNER)
+
 
 
 # Retrieve, update, or delete a specific work board
 class WorkBoardDetailView(RetrieveUpdateDestroyAPIView):
     queryset = WorkBoard.objects.all()
     serializer_class = WorkBoardSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrCollaborator]
 
     def get_object(self):
         board = get_object_or_404(WorkBoard, pk=self.kwargs['pk'])
@@ -140,3 +162,11 @@ def board_user_roles(request, board_id):
     roles = board.user_roles.all()
     serializer = WorkBoardUserRoleSerializer(roles, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_list(request):
+    users = CustomUser.objects.all().values('id', 'username')  # Return only ID and username
+    return Response(users)
+
+

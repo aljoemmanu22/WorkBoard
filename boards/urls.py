@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterView, LoginView, LogoutView, WorkBoardListCreateView, WorkBoardDetailView, task_list_create, TaskDetailView, assign_user_role, board_user_roles
+from .views import RegisterView, LoginView, LogoutView, WorkBoardListCreateView, WorkBoardDetailView, task_list_create, TaskDetailView, assign_user_role, board_user_roles, user_list
 
 
 urlpatterns = [
@@ -17,4 +17,6 @@ urlpatterns = [
     # WorkBoard role management
     path('boards/<int:board_id>/assign-role/', assign_user_role, name='assign-user-role'),
     path('boards/<int:board_id>/roles/', board_user_roles, name='board-user-roles'),
+
+    path('users/', user_list, name='user-list'),
 ]
